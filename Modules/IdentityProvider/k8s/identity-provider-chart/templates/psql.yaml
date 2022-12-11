@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-provider-psql-deployment
+  namespace: identity-provider
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-provider-psql
+  template:
+    metadata:
+      labels:
+        app: identity-provider-psql
+    spec:
+      containers:
+        - name: identity-provider-psql
+          image: postgres:14.2-alpine
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          envFrom:
+            - secretRef:
+                name: identity-provider-psql-secret
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgredb
+            - mountPath: /docker-entrypoint-initdb.d
+              name: identity-provider-psql-init
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: psql-pv-ip-claim
+        - name: identity-provider-psql-init
+          projected:
+            sources:
+              - configMap:
+                  name: identity-provider-psql-schema
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-provider-psql-service
+  labels:
+    app: identity-provider-psql
+  namespace: identity-provider
+spec:
+  selector:
+    app: identity-provider-psql
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

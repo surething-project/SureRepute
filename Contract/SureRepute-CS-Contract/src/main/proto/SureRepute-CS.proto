@@ -1,0 +1,104 @@
+syntax = "proto3";
+package pt.ulisboa.tecnico.surerepute.cs.contract;
+
+option go_package = "pt.ulisboa.tecnico.surerepute.cs.contract";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+/***************
+* Definitions *
+***************/
+
+enum Report {
+  INTENTIONALLY_MALICIOUS_CRITICAL = 0;
+  INTENTIONALLY_MALICIOUS = 1;
+  ACCIDENTALLY_MALICIOUS = 2;
+  WELL_BEHAVED = 3;
+}
+
+message ReputationScore {
+  // Pseudonym encrypted with the Server Private Key
+  bytes encryptedPseudonym = 1;
+  // A score that reflects the user behavior
+  double score = 2;
+}
+
+message ReputationScores {
+  // Scores that reflects the users behavior
+  repeated ReputationScore scores = 1;
+}
+
+message  GetReputationScoreRequest {
+  // Pseudonym encrypted with the Server Private Key
+  bytes encryptedPseudonym = 1;
+}
+
+message  GetReputationScoresRequest {
+  // Pseudonyms encrypted with the Server Private Key
+  repeated bytes encryptedPseudonyms = 1;
+}
+
+message ReportBehaviorsRequest {
+  // Report Pseudonym Behavior
+  repeated ReportBehaviorRequest reportBehaviors = 1;
+}
+
+message ReportBehaviorRequest {
+  // Encrypted Pseudonym + Signature
+  bytes encryptedPseudonym = 1;
+  // report that reflects the user behavior
+  Report report = 2;
+}
+
+message PINGResponse {
+  bool working = 1;
+}
+
+
+/***********************************
+* SureRepute Client-Server Service *
+************************************/
+
+service SureReputeCS {
+
+  // Gets the Reputation Score a user
+  rpc GetReputationScore(GetReputationScoreRequest) returns (ReputationScore) {
+    option (google.api.http) = {
+      post: "/v1/reputation/score"
+      body: "*"
+    };
+  }
+
+  // Gets the Reputation Score of multiple users
+  rpc GetReputationScores(GetReputationScoresRequest) returns (ReputationScores) {
+    option (google.api.http) = {
+      post: "/v1/reputation/scores"
+      body: "*"
+    };
+  }
+
+
+  // Reports the behavior of a user
+  rpc ReportBehavior(ReportBehaviorRequest) returns (ReputationScore) {
+    option (google.api.http) = {
+      post: "/v1/reputation/report"
+      body: "*"
+    };
+  }
+
+  // Reports the behavior of multiple user
+  rpc ReportBehaviors(ReportBehaviorsRequest) returns (ReputationScores) {
+    option (google.api.http) = {
+      post: "/v1/reputation/reports"
+      body: "*"
+    };
+  }
+
+  rpc PING(google.protobuf.Empty) returns (PINGResponse) {
+    option (google.api.http) = {
+      get: "/v1/ping"
+      body: "*"
+    };
+  }
+}

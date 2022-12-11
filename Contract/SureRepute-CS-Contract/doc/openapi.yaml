@@ -1,0 +1,165 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: SureReputeCS API
+    version: 0.0.1
+paths:
+    /v1/ping:
+        get:
+            tags:
+                - SureReputeCS
+            operationId: SureReputeCS_PING
+            requestBody:
+                content:
+                    application/x-protobuf:
+                        schema:
+                            type: object
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/x-protobuf:
+                            schema:
+                                $ref: '#/components/schemas/PINGResponse'
+    /v1/reputation/report:
+        post:
+            tags:
+                - SureReputeCS
+            description: Reports the behavior of a user
+            operationId: SureReputeCS_ReportBehavior
+            requestBody:
+                content:
+                    application/x-protobuf:
+                        schema:
+                            $ref: '#/components/schemas/ReportBehaviorRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/x-protobuf:
+                            schema:
+                                $ref: '#/components/schemas/ReputationScore'
+    /v1/reputation/reports:
+        post:
+            tags:
+                - SureReputeCS
+            description: Reports the behavior of multiple user
+            operationId: SureReputeCS_ReportBehaviors
+            requestBody:
+                content:
+                    application/x-protobuf:
+                        schema:
+                            $ref: '#/components/schemas/ReportBehaviorsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/x-protobuf:
+                            schema:
+                                $ref: '#/components/schemas/ReputationScores'
+    /v1/reputation/score:
+        post:
+            tags:
+                - SureReputeCS
+            description: Gets the Reputation Score a user
+            operationId: SureReputeCS_GetReputationScore
+            requestBody:
+                content:
+                    application/x-protobuf:
+                        schema:
+                            $ref: '#/components/schemas/GetReputationScoreRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/x-protobuf:
+                            schema:
+                                $ref: '#/components/schemas/ReputationScore'
+    /v1/reputation/scores:
+        post:
+            tags:
+                - SureReputeCS
+            description: Gets the Reputation Score of multiple users
+            operationId: SureReputeCS_GetReputationScores
+            requestBody:
+                content:
+                    application/x-protobuf:
+                        schema:
+                            $ref: '#/components/schemas/GetReputationScoresRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/x-protobuf:
+                            schema:
+                                $ref: '#/components/schemas/ReputationScores'
+components:
+    schemas:
+        GetReputationScoreRequest:
+            type: object
+            properties:
+                encryptedPseudonym:
+                    type: string
+                    description: Pseudonym encrypted with the Server Private Key
+                    format: bytes
+        GetReputationScoresRequest:
+            type: object
+            properties:
+                encryptedPseudonyms:
+                    type: array
+                    items:
+                        type: string
+                        format: bytes
+                    description: Pseudonyms encrypted with the Server Private Key
+        PINGResponse:
+            type: object
+            properties:
+                working:
+                    type: boolean
+        ReportBehaviorRequest:
+            type: object
+            properties:
+                encryptedPseudonym:
+                    type: string
+                    description: Encrypted Pseudonym + Signature
+                    format: bytes
+                report:
+                    type: integer
+                    description: report that reflects the user behavior
+                    format: enum
+        ReportBehaviorsRequest:
+            type: object
+            properties:
+                reportBehaviors:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ReportBehaviorRequest'
+                    description: Report Pseudonym Behavior
+        ReputationScore:
+            type: object
+            properties:
+                encryptedPseudonym:
+                    type: string
+                    description: Pseudonym encrypted with the Server Private Key
+                    format: bytes
+                score:
+                    type: number
+                    description: A score that reflects the user behavior
+                    format: double
+        ReputationScores:
+            type: object
+            properties:
+                scores:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ReputationScore'
+                    description: Scores that reflects the users behavior
+tags:
+    - name: SureReputeCS

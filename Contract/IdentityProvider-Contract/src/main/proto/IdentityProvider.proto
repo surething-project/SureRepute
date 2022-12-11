@@ -1,0 +1,56 @@
+syntax = "proto3";
+package pt.ulisboa.tecnico.surerepute.identity.provider.contract;
+
+option go_package = "pt.ulisboa.tecnico.surerepute.identity.provider.contract";
+
+import "google/api/annotations.proto";
+
+/***************
+* Definitions *
+***************/
+
+message GetEncryptedPseudonymRequest {
+  // Identifier of the User
+  string userId = 1;
+  // Identifier of the SureRepute-Server
+  string serverId = 2;
+}
+
+message GetEncryptedPseudonymsRequest {
+  // Identifier of the users
+  repeated string userId = 1;
+  // Identifier of the SureRepute-Server
+  string serverId = 2;
+}
+
+message  GetEncryptedPseudonymResponse {
+  // Pseudonym encrypted with the Server Private Key
+  bytes encryptedPseudonym = 1;
+}
+
+message  GetEncryptedPseudonymsResponse {
+  // Pseudonyms encrypted with the Server Private Key
+  map<string, bytes> encryptedPseudonyms = 1;
+}
+
+/****************************
+* Identity Provider Service *
+*****************************/
+
+service IdentityProvider {
+  // Gets an Encrypted Pseudonym
+  rpc GetEncryptedPseudonym(GetEncryptedPseudonymRequest) returns (GetEncryptedPseudonymResponse) {
+    option (google.api.http) = {
+      post: "/v1/pseudonym"
+      body: "*"
+    };
+  }
+
+  // Gets Encrypted Pseudonym of multiple users
+  rpc GetEncryptedPseudonyms(GetEncryptedPseudonymsRequest) returns (GetEncryptedPseudonymsResponse) {
+    option (google.api.http) = {
+      post: "/v1/pseudonyms"
+      body: "*"
+    };
+  }
+}

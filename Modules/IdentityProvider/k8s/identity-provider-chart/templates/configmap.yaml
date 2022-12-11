@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identity-provider-psql-schema
+  namespace: identity-provider
+data:
+  {{- (.Files.Glob "configmap/*").AsConfig | nindent 2 }}

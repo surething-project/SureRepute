@@ -1,0 +1,31 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: regionalpd-ip-storageclass
+  labels:
+    type: cloud
+    app: identity-provider-psql
+  namespace: identity-provider
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: failure-domain.beta.kubernetes.io/zone
+        values:
+          - europe-west1-b
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: psql-pv-ip-claim
+  labels:
+    app: identity-provider-psql
+  namespace: identity-provider
+spec:
+  storageClassName: regionalpd-ip-storageclass
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

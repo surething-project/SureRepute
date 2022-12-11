@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sure-repute-{{ .Values.K8S_ID }}-deployment
+  labels:
+    app: sure-repute-{{ .Values.K8S_ID }}-server
+  namespace: sure-repute
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sure-repute-{{ .Values.K8S_ID }}-server
+  template:
+    metadata:
+      labels:
+        app: sure-repute-{{ .Values.K8S_ID }}-server
+    spec:
+      containers:
+        - name: sure-repute-{{ .Values.K8S_ID }}-server
+          image: gcr.io/gsdsupport/sure-repute-server:v1.0.0
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 9092
+              name: client
+              protocol: TCP
+            - containerPort: 9093
+              name: server
+              protocol: TCP
+            - containerPort: 9094
+              name: ip
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: sure-repute-{{ .Values.K8S_ID }}-secret
+            - configMapRef:
+                name: sure-repute-{{ .Values.K8S_ID }}-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sure-repute-{{ .Values.K8S_ID }}-service
+  namespace: sure-repute
+spec:
+  selector:
+    app: sure-repute-{{ .Values.K8S_ID }}-server
+  ports:
+    - protocol: TCP
+      name: client
+      port: 9092
+      targetPort: 9092
+    - protocol: TCP
+      name: server
+      port: 9093
+      targetPort: 9093
+    - protocol: TCP
+      name: ip
+      port: 9094
+      targetPort: 9094
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sure-repute-{{ .Values.K8S_ID }}-hpa
+  labels:
+    app: sure-repute-{{ .Values.K8S_ID }}-server
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sure-repute-{{ .Values.K8S_ID }}-deployment
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 40

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-provider-deployment
+  labels:
+    app: identity-provider-server
+  namespace: identity-provider
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-provider-server
+  template:
+    metadata:
+      labels:
+        app: identity-provider-server
+    spec:
+      containers:
+        - name: identity-provider-server
+          image: gcr.io/gsdsupport/identity-provider-server:v1.0.0
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 9091
+              name: client
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: identity-provider-secret
+            - configMapRef:
+                name: identity-provider-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-provider-service
+  namespace: identity-provider
+spec:
+  selector:
+    app: identity-provider-server
+  ports:
+    - protocol: TCP
+      name: client
+      port: 9091
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: identity-provider-hpa
+  labels:
+    app: identity-provider-server
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: identity-provider-deployment
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 40

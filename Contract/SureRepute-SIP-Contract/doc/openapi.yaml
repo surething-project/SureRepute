@@ -1,0 +1,38 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: SureReputeSIP API
+    version: 0.0.1
+paths:
+    /v1/key:
+        get:
+            tags:
+                - SureReputeSIP
+            description: Gets the Public Key of a server Entity
+            operationId: SureReputeSIP_GetPublicKey
+            requestBody:
+                content:
+                    application/x-protobuf:
+                        schema:
+                            type: object
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/x-protobuf:
+                            schema:
+                                $ref: '#/components/schemas/GetPublicKeyResponse'
+components:
+    schemas:
+        GetPublicKeyResponse:
+            type: object
+            properties:
+                publicKey:
+                    type: string
+                    description: A public key
+                    format: bytes
+tags:
+    - name: SureReputeSIP

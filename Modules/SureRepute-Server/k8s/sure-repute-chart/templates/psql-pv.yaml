@@ -1,0 +1,31 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: regionalpd-{{ .Values.K8S_ID }}-storageclass
+  labels:
+    type: cloud
+    app: sure-repute-{{ .Values.K8S_ID }}-psql
+  namespace: sure-repute
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: failure-domain.beta.kubernetes.io/zone
+        values:
+          - europe-west1-b
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: psql-pv-{{ .Values.K8S_ID }}-claim
+  labels:
+    app: sure-repute-{{ .Values.K8S_ID }}-psql
+  namespace: sure-repute
+spec:
+  storageClassName: regionalpd-{{ .Values.K8S_ID }}-storageclass
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

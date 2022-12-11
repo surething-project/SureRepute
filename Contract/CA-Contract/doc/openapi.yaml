@@ -1,0 +1,45 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: CA API
+    version: 0.0.1
+paths:
+    /v1/ca:
+        post:
+            tags:
+                - CA
+            description: Generates a Certificate for the given entity
+            operationId: CA_SignCSR
+            requestBody:
+                content:
+                    application/x-protobuf:
+                        schema:
+                            $ref: '#/components/schemas/SignCSRRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/x-protobuf:
+                            schema:
+                                $ref: '#/components/schemas/Certificate'
+components:
+    schemas:
+        Certificate:
+            type: object
+            properties:
+                certificate:
+                    type: string
+                    description: The contents of a certificate
+                    format: bytes
+        SignCSRRequest:
+            type: object
+            properties:
+                csr:
+                    type: string
+                    description: The contents of a certificate signing request
+                    format: bytes
+tags:
+    - name: CA

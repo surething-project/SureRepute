@@ -1,0 +1,34 @@
+syntax = "proto3";
+package pt.ulisboa.tecnico.surerepute.ca.contract;
+
+option go_package = "pt.ulisboa.tecnico.surerepute.ca.contract";
+
+import "google/api/annotations.proto";
+
+/***************
+* Definitions *
+***************/
+
+message Certificate {
+  // The contents of a certificate
+  bytes certificate = 1;
+}
+
+message SignCSRRequest {
+  // The contents of a certificate signing request
+  bytes csr = 1;
+}
+
+/*************
+* CA Service *
+**************/
+
+service CA {
+  // Generates a Certificate for the given entity
+  rpc signCSR(SignCSRRequest) returns (Certificate) {
+    option (google.api.http) = {
+      post: "/v1/ca"
+      body: "*"
+    };
+  }
+}

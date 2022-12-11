@@ -1,0 +1,31 @@
+syntax = "proto3";
+package pt.ulisboa.tecnico.surerepute.sip.contract;
+
+option go_package = "pt.ulisboa.tecnico.surerepute.sip.contract";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+/***************
+* Definitions *
+***************/
+
+message GetPublicKeyResponse {
+  // A public key
+  bytes publicKey = 1;
+}
+
+/************************
+* SureReputeSIP Service *
+*************************/
+
+service SureReputeSIP {
+
+  // Gets the Public Key of a server Entity
+  rpc GetPublicKey(google.protobuf.Empty) returns (GetPublicKeyResponse) {
+    option (google.api.http) = {
+      get: "/v1/key"
+      body: "*"
+    };
+  }
+}

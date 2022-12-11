@@ -1,0 +1,30 @@
+{
+   "ca": "https://localhost:9090",
+   "identityProvider": "https://localhost:9091",
+   "servers":[
+      [
+         "SureReputeServer1",
+         "https://localhost:9092",
+         "https://localhost:9093",
+         "https://localhost:9094"
+      ],
+      [
+         "SureReputeServer2",
+         "https://localhost:9095",
+         "https://localhost:9096",
+         "https://localhost:9097"
+      ],
+      [
+         "SureReputeServer3",
+         "https://localhost:9082",
+         "https://localhost:9083",
+         "https://localhost:9084"
+      ],
+      [
+         "SureReputeServer4",
+         "https://localhost:9085",
+         "https://localhost:9086",
+         "https://localhost:9087"
+      ]
+   ]
+}

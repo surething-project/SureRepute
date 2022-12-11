@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sure-repute
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sure-repute-role
+  namespace: sure-repute
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader-binding
+  namespace: sure-repute
+subjects:
+  # Google Cloud user account
+  - kind: User
+    name: rafafigoalexandre@gmail.com
+roleRef:
+  kind: Role
+  name: sure-repute-role
+  apiGroup: rbac.authorization.k8s.io

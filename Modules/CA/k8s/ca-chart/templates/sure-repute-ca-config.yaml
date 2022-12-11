@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: sure-repute-ca-server
+  name: sure-repute-ca-config
+  namespace: ca
+data:
+  CA_URL: https://0.0.0.0:9090

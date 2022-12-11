@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sure-repute-{{ .Values.K8S_ID }}-psql-deployment
+  namespace: sure-repute
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sure-repute-{{ .Values.K8S_ID }}-psql
+  template:
+    metadata:
+      labels:
+        app: sure-repute-{{ .Values.K8S_ID }}-psql
+    spec:
+      containers:
+        - name: sure-repute-{{ .Values.K8S_ID }}-psql
+          image: postgres:14.2-alpine
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          envFrom:
+            - secretRef:
+                name: sure-repute-{{ .Values.K8S_ID }}-psql-secret
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgredb
+            - mountPath: /docker-entrypoint-initdb.d
+              name: sure-repute-{{ .Values.K8S_ID }}-psql-init
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: psql-pv-{{ .Values.K8S_ID }}-claim
+        - name: sure-repute-{{ .Values.K8S_ID }}-psql-init
+          projected:
+            sources:
+              - configMap:
+                  name: sure-repute-{{ .Values.K8S_ID }}-psql-schema
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sure-repute-{{ .Values.K8S_ID }}-psql-service
+  labels:
+    app: sure-repute-{{ .Values.K8S_ID }}-psql
+  namespace: sure-repute
+spec:
+  selector:
+    app: sure-repute-{{ .Values.K8S_ID }}-psql
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

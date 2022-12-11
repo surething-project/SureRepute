@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  identity-provider-psql:
+    image: postgres:14.2-alpine
+    container_name: identity-provider-psql
+    restart: always
+    environment:
+      - POSTGRES_USER=identity-provider
+      - POSTGRES_PASSWORD=identity-provider
+    ports:
+      - '5433:5433'
+    volumes:
+      - identity-provider-psql:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  identity-provider-server:
+    image: identity-provider-server:latest
+    container_name: identity-provider-server
+    depends_on:
+      - identity-provider-psql
+    environment:
+      - IDENTITY_PROVIDER_URL=https://localhost:9091
+      - DB_CONNECTION=identity-provider-psql
+      - DB_PORT=5433
+      - DB_NAME=identity-provider
+      - DB_USER=identity-provider
+      - DB_PWD=identity-provider
+    network_mode: "host"
+
+volumes:
+  identity-provider-psql:
+    driver: local

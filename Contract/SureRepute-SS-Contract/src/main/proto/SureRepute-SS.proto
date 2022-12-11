@@ -1,0 +1,88 @@
+syntax = "proto3";
+package pt.ulisboa.tecnico.surerepute.ss.contract;
+
+option go_package = "pt.ulisboa.tecnico.surerepute.ss.contract";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+/***************
+* Definitions *
+***************/
+
+enum Report {
+  INTENTIONALLY_MALICIOUS_CRITICAL = 0;
+  INTENTIONALLY_MALICIOUS = 1;
+  ACCIDENTALLY_MALICIOUS = 2;
+  WELL_BEHAVED = 3;
+}
+
+message NewPseudonymRequest {
+  // Identifier of this SureRepute-Server
+  string followerId = 1;
+  // Identification of the user
+  string pseudonym = 2;
+}
+
+message NewPseudonymResponse {
+  // Identifier of the SureRepute-Server that handles this pseudonym
+  string leaderId = 1;
+  // The amount of positive behavior
+  double positiveBehavior = 2;
+  // The amount of negative behavior
+  double negativeBehavior = 3;
+}
+
+message ForwardScoreDetailsRequest {
+  // Identification of the user
+  string pseudonym = 1;
+  // Behavior Details
+  ScoreDetails scoreDetails = 2;
+}
+
+message ForwardReportRequest {
+  // Identification of the SureRepute Server
+  string followerId = 1;
+  // Identification of the user
+  string pseudonym = 2;
+  // A Report that reflects the user behavior
+  Report report = 3;
+}
+
+message ScoreDetails {
+  // The amount of positive behavior
+  double positiveBehavior = 1;
+  // The amount of negative behavior
+  double negativeBehavior = 2;
+}
+
+/***********************************
+* SureRepute Server-Server Service *
+************************************/
+
+service SureReputeSS {
+  // Verify if other servers already deal with this Pseudonym
+  rpc NewPseudonym(NewPseudonymRequest) returns (NewPseudonymResponse) {
+    option (google.api.http) = {
+      post: "/v1/shared/pseudonym"
+      body: "*"
+    };
+  }
+
+  // Forwards the report of a shared user to the leader
+  rpc ForwardReport(ForwardReportRequest) returns (ScoreDetails) {
+    option (google.api.http) = {
+      post: "/v1/shared/report"
+      body: "*"
+    };
+  }
+
+  // Forwards the ScoreDetails of a shared user to a follower
+  rpc ForwardScoreDetails(ForwardReportRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/shared/behavior"
+      body: "*"
+    };
+  }
+
+}

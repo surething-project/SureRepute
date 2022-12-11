@@ -1,0 +1,7 @@
+# Default values for identity-provider-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+DB_NAME: identity_provider
+DB_USER: aWRlbnRpdHlfcHJvdmlkZXI=
+DB_PWD: aWRlbnRpdHlfcHJvdmlkZXI=
+CIP_HOST: ip.surething-surerepute.com

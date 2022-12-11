@@ -1,0 +1,11 @@
+# Default values for sure-repute-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+K8S_ID: cross
+ID: SureReputeServer1
+DB_NAME: sure_repute
+CS_HOST_NAME: cs1.server.surething-surerepute.com
+SS_HOST_NAME: ss1.server.surething-surerepute.com
+SIP_HOST_NAME: sip1.server.surething-surerepute.com
+DB_USER: c3VyZV9yZXB1dGU=
+DB_PWD: c3VyZV9yZXB1dGU=

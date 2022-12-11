@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sure-repute-ca-deployment
+  labels:
+    app: sure-repute-ca-server
+  namespace: ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sure-repute-ca-server
+  template:
+    metadata:
+      labels:
+        app: sure-repute-ca-server
+    spec:
+      containers:
+        - name: sure-repute-ca-server
+          image: gcr.io/gsdsupport/sure-repute-ca-server:v1.0.0
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+          ports:
+            - containerPort: 9090
+              name: client
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: sure-repute-ca-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sure-repute-ca-service
+  namespace: ca
+spec:
+  selector:
+    app: sure-repute-ca-server
+  ports:
+    - protocol: TCP
+      name: client
+      port: 9090
+      targetPort: 9090

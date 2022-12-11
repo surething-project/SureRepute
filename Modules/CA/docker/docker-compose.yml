@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  sure_repute_ca-server:
+    image: sure-repute-ca-server:latest
+    container_name: sure-repute-ca-server
+    environment:
+      - CA_URL=https://0.0.0.0:9090
+    network_mode: "host"

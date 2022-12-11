@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  sure-repute-psql:
+    image: postgres:14.2-alpine
+    container_name: sure-repute-psql
+    restart: always
+    environment:
+      - POSTGRES_USER=sure-repute1
+      - POSTGRES_PASSWORD=sure-repute1
+    ports:
+      - '5432:5432'
+    volumes:
+      - sure-repute-psql:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  sure-repute-server:
+    image: sure-repute-server:latest
+    container_name: sure-repute-server
+    depends_on:
+      - sure-repute-psql
+    environment:
+      - ID=SureReputeServer1
+      - CLIENT_SERVER_URL=https://localhost:9092
+      - SERVER_SERVER_URL=https://localhost:9093
+      - IP_SERVER_URL=https://localhost:9094
+      - DB_CONNECTION=sure-repute-psql
+      - DB_PORT=5432
+      - DB_NAME=sure-repute1
+      - DB_USER=sure-repute1
+      - DB_PWD=sure-repute1
+    network_mode: "host"
+
+
+volumes:
+  sure-repute-psql:
+    driver: local

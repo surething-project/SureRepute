@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sure-repute-{{ .Values.K8S_ID }}-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  namespace: sure-repute
+spec:
+  rules:
+    - host: {{ .Values.CS_HOST_NAME }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sure-repute-{{ .Values.K8S_ID }}-service
+                port:
+                  number: 9092
+    - host: {{ .Values.SS_HOST_NAME }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sure-repute-{{ .Values.K8S_ID }}-service
+                port:
+                  number: 9093
+    - host: {{ .Values.SIP_HOST_NAME }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sure-repute-{{ .Values.K8S_ID }}-service
+                port:
+                  number: 9094
+
